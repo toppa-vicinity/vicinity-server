@@ -30,6 +30,7 @@ const main = async () => {
   app.use(cors());
 
   const apolloServer = new ApolloServer({
+    introspection: true,
     schema: await buildSchema({
       resolvers: [UserResolver, HelloResolver], // add resolvers
       validate: false,

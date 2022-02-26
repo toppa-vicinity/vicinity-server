@@ -22,6 +22,7 @@ const main = async () => {
     app.set("trust proxy", true);
     app.use((0, cors_1.default)());
     const apolloServer = new apollo_server_express_1.ApolloServer({
+        introspection: true,
         schema: await (0, type_graphql_1.buildSchema)({
             resolvers: [user_1.UserResolver, hello_1.HelloResolver],
             validate: false,
