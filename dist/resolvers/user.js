@@ -61,6 +61,10 @@ __decorate([
     (0, type_graphql_1.Field)(() => User_1.User, { nullable: true }),
     __metadata("design:type", User_1.User)
 ], UserResponse.prototype, "user", void 0);
+__decorate([
+    (0, type_graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], UserResponse.prototype, "token", void 0);
 UserResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], UserResponse);
@@ -72,6 +76,13 @@ let UserResolver = class UserResolver {
             return {
                 errors: [
                     { field: "username", message: "length must be greater than 2" },
+                ],
+            };
+        }
+        if (options.username.includes("@")) {
+            return {
+                errors: [
+                    { field: "username", message: "username cannot have symbol @" },
                 ],
             };
         }

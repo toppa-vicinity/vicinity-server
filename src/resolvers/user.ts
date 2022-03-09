@@ -42,6 +42,9 @@ class UserResponse {
 
   @Field(() => User, { nullable: true })
   user?: User;
+
+  @Field({ nullable: true })
+  token?: string;
 }
 
 @Resolver()
@@ -60,6 +63,13 @@ export class UserResolver {
       return {
         errors: [
           { field: "username", message: "length must be greater than 2" },
+        ],
+      };
+    }
+    if (options.username.includes("@")) {
+      return {
+        errors: [
+          { field: "username", message: "username cannot have symbol @" },
         ],
       };
     }
@@ -101,7 +111,6 @@ export class UserResolver {
     }
 
     // TODO: remember me asyncstore
-
     return { user };
   }
 
@@ -119,7 +128,6 @@ export class UserResolver {
     const verify = await argon2.verify(user.password, options.password);
     if (verify) {
       // TODO: remember me asyncstore
-
       return {
         user,
       };

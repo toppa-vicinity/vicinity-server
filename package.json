@@ -1,7 +1,6 @@
 {
   "name": "vicinity-server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "watch": "tsc -w",
@@ -23,7 +22,17 @@
     "express": "^4.17.3",
     "graphql": "15.3.0",
     "mysql": "^2.18.1",
+    "pg": "^8.7.3",
     "typeorm": "^0.2.44",
     "uuid": "^8.3.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toppa-vicinity/vicinity-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/toppa-vicinity/vicinity-server/issues"
+  },
+  "homepage": "https://github.com/toppa-vicinity/vicinity-server#readme",
+  "description": ""
 }

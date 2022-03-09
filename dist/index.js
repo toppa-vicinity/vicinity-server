@@ -8,23 +8,26 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
-const user_1 = require("./resolvers/user");
-const hello_1 = require("./resolvers/hello");
-const mysql_1 = require("mysql");
+const resolvers_1 = require("./resolvers");
+const typeorm_1 = require("typeorm");
+const User_1 = require("./entities/User");
 const main = async () => {
-    await (0, mysql_1.createPool)({
-        host: "toppa-vicinity-dev.cnxtjh97j1g2.us-east-1.rds.amazonaws.com",
-        port: 3306,
-        user: "vicinity_dev",
-        password: "toppa_vicinity_dev6",
+    const conn = await (0, typeorm_1.createConnection)({
+        type: "postgres",
+        url: process.env.DATABASE_URL,
+        logging: true,
+        synchronize: true,
+        extra: { rejectUnauthorized: false },
+        entities: [User_1.User],
     });
+    console.log("connected at", conn.name);
     const app = (0, express_1.default)();
     app.set("trust proxy", true);
     app.use((0, cors_1.default)());
     const apolloServer = new apollo_server_express_1.ApolloServer({
         introspection: true,
         schema: await (0, type_graphql_1.buildSchema)({
-            resolvers: [user_1.UserResolver, hello_1.HelloResolver],
+            resolvers: [resolvers_1.UserResolver, resolvers_1.HelloResolver],
             validate: false,
         }),
         context: ({ req, res }) => ({

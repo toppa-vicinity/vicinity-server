@@ -4,25 +4,21 @@ import express from "express";
 import cors from "cors";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { UserResolver } from "./resolvers/user";
-import { HelloResolver } from "./resolvers/hello";
+import { HelloResolver, UserResolver } from "./resolvers";
 import { MyContext } from "./types";
-// import { createConnection } from "typeorm";
-// import { User } from "./entities/User";
-import { createPool } from "mysql";
+import { createConnection } from "typeorm";
+import { User } from "./entities/User";
 
 const main = async () => {
-  await createPool({
-    // type: "mysql",
-    host: "toppa-vicinity-dev.cnxtjh97j1g2.us-east-1.rds.amazonaws.com",
-    port: 3306,
-    // name: "toppa_vicinity_dev",
-    user: "vicinity_dev",
-    password: "toppa_vicinity_dev6",
-    // logging: true,
-    // synchronize: true,
-    // entities: [User], // add entities
+  const conn = await createConnection({
+    type: "postgres",
+    url: process.env.DATABASE_URL,
+    logging: true,
+    synchronize: true,
+    extra: { rejectUnauthorized: false },
+    entities: [User], // add entities
   });
+  console.log("connected at", conn.name);
 
   const app = express();
   app.set("trust proxy", true);
