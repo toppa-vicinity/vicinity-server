@@ -71,6 +71,9 @@ UserResponse = __decorate([
 let UserResolver = class UserResolver {
     me({}) {
     }
+    listusers() {
+        return User_1.User.find();
+    }
     async register(options, {}) {
         if (options.username.length <= 2) {
             return {
@@ -158,6 +161,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "me", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [User_1.User]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "listusers", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => UserResponse),
     __param(0, (0, type_graphql_1.Arg)("options")),

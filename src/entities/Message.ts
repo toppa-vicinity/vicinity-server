@@ -1,32 +1,32 @@
-import { Field, ObjectType } from "type-graphql";
+import { ObjectType, Field } from "type-graphql";
 import {
+  Entity,
   BaseEntity,
-  Column,
   PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
 } from "typeorm";
-import { Entity } from "typeorm/decorator/entity/Entity";
-import { User } from "./User";
+import { ChatRoom } from "./ChatRoom";
 
 @ObjectType()
 @Entity()
 export class Message extends BaseEntity {
-    @Field()
-    @PrimaryGeneratedColumn()
-    id!: number
+  @Field() // added to expose the field, which other wise we cannot query
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Field()
-    @Column()
-    sentBy!: User
+  @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.messages)
+  chatRoom!: ChatRoom;
 
-    @Field()
-    @Column()
-    sentFrom?: User
+  @Field()
+  @Column()
+  sender!: number;
 
-    @Field()
-    @Column()
-    timeStamp!: Date
+  @Column()
+  content!: string;
 
-    @Field()
-    @Column()
-    content!: string
+  @Field(() => String)
+  @CreateDateColumn()
+  createdAt: Date;
 }

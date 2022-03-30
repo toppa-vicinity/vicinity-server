@@ -54,6 +54,11 @@ export class UserResolver {
     // fetch from async store
   }
 
+  @Query(() => [User])
+  listusers() {
+    return User.find();
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UsernamePasswordInput,
