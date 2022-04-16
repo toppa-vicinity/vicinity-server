@@ -5,7 +5,6 @@ import cors from "cors";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver, UserResolver } from "./resolvers";
-import { MyContext } from "./types";
 import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 
@@ -30,10 +29,6 @@ const main = async () => {
     schema: await buildSchema({
       resolvers: [UserResolver, HelloResolver], // add resolvers
       validate: false,
-    }),
-    context: ({ req, res }): MyContext => ({
-      req,
-      res,
     }),
   });
 

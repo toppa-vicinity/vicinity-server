@@ -11,7 +11,7 @@ import {
 } from "type-graphql";
 import { MyContext } from "src/types";
 import argon2 from "argon2";
-// import { v4 } from "uuid";
+import { v4 } from "uuid";
 import { getConnection } from "typeorm";
 
 @InputType()
@@ -114,9 +114,8 @@ export class UserResolver {
         };
       }
     }
-
-    // TODO: remember me asyncstore
-    return { user };
+    const token = v4();
+    return { user, token };
   }
 
   @Mutation(() => UserResponse)
@@ -132,10 +131,8 @@ export class UserResolver {
     }
     const verify = await argon2.verify(user.password, options.password);
     if (verify) {
-      // TODO: remember me asyncstore
-      return {
-        user,
-      };
+      const token = v4();
+      return { user, token };
     } else {
       return {
         errors: [
@@ -145,11 +142,11 @@ export class UserResolver {
     }
   }
 
-  @Mutation(() => Boolean)
-  logout(@Ctx() {}: MyContext) {
-    return new Promise((resolve) => {
-      // TODO: remove from asyncstore
-      resolve(true);
-    });
-  }
+  // @Mutation(() => Boolean)
+  // logout(@Ctx() {}: MyContext) {
+  //   return new Promise((resolve) => {
+  //     // TODO: remove from asyncstore
+  //     resolve(true);
+  //   });
+  // }
 }

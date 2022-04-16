@@ -19,6 +19,7 @@ exports.UserResolver = exports.FieldError = void 0;
 const User_1 = require("../entities/User");
 const type_graphql_1 = require("type-graphql");
 const argon2_1 = __importDefault(require("argon2"));
+const uuid_1 = require("uuid");
 const typeorm_1 = require("typeorm");
 let UsernamePasswordInput = class UsernamePasswordInput {
 };
@@ -125,7 +126,8 @@ let UserResolver = class UserResolver {
                 };
             }
         }
-        return { user };
+        const token = (0, uuid_1.v4)();
+        return { user, token };
     }
     async login(options, {}) {
         const user = await User_1.User.findOne({ where: { username: options.username } });
@@ -136,9 +138,8 @@ let UserResolver = class UserResolver {
         }
         const verify = await argon2_1.default.verify(user.password, options.password);
         if (verify) {
-            return {
-                user,
-            };
+            const token = (0, uuid_1.v4)();
+            return { user, token };
         }
         else {
             return {
@@ -147,11 +148,6 @@ let UserResolver = class UserResolver {
                 ],
             };
         }
-    }
-    logout({}) {
-        return new Promise((resolve) => {
-            resolve(true);
-        });
     }
 };
 __decorate([
@@ -183,13 +179,6 @@ __decorate([
     __metadata("design:paramtypes", [UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
-__decorate([
-    (0, type_graphql_1.Mutation)(() => Boolean),
-    __param(0, (0, type_graphql_1.Ctx)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], UserResolver.prototype, "logout", null);
 UserResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], UserResolver);

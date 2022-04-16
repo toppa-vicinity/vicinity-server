@@ -30,10 +30,6 @@ const main = async () => {
             resolvers: [resolvers_1.UserResolver, resolvers_1.HelloResolver],
             validate: false,
         }),
-        context: ({ req, res }) => ({
-            req,
-            res,
-        }),
     });
     await apolloServer.start();
     apolloServer.applyMiddleware({
