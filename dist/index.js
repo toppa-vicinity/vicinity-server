@@ -11,6 +11,8 @@ const type_graphql_1 = require("type-graphql");
 const resolvers_1 = require("./resolvers");
 const typeorm_1 = require("typeorm");
 const User_1 = require("./entities/User");
+const ChatRoom_1 = require("./entities/ChatRoom");
+const Message_1 = require("./entities/Message");
 const main = async () => {
     const conn = await (0, typeorm_1.createConnection)({
         type: "postgres",
@@ -18,7 +20,7 @@ const main = async () => {
         logging: true,
         synchronize: true,
         extra: { rejectUnauthorized: false },
-        entities: [User_1.User],
+        entities: [User_1.User, ChatRoom_1.ChatRoom, Message_1.Message],
     });
     console.log("connected at", conn.name);
     const app = (0, express_1.default)();

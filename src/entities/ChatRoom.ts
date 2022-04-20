@@ -19,7 +19,7 @@ export class ChatRoom extends BaseEntity {
 
   @Field()
   @Column()
-  users!: Set<number>;
+  with!: number;
 
   @OneToMany(() => Message, (msg) => msg.chatRoom)
   messages: Message[];

@@ -19,7 +19,6 @@ exports.UserResolver = exports.FieldError = void 0;
 const User_1 = require("../entities/User");
 const type_graphql_1 = require("type-graphql");
 const argon2_1 = __importDefault(require("argon2"));
-const uuid_1 = require("uuid");
 const typeorm_1 = require("typeorm");
 let UsernamePasswordInput = class UsernamePasswordInput {
 };
@@ -38,6 +37,19 @@ __decorate([
 UsernamePasswordInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], UsernamePasswordInput);
+let BeFriendInput = class BeFriendInput {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], BeFriendInput.prototype, "id", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Number)
+], BeFriendInput.prototype, "with", void 0);
+BeFriendInput = __decorate([
+    (0, type_graphql_1.InputType)()
+], BeFriendInput);
 let FieldError = class FieldError {
 };
 __decorate([
@@ -64,7 +76,7 @@ __decorate([
 ], UserResponse.prototype, "user", void 0);
 __decorate([
     (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], UserResponse.prototype, "token", void 0);
 UserResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
@@ -74,6 +86,9 @@ let UserResolver = class UserResolver {
     }
     listusers() {
         return User_1.User.find();
+    }
+    clear() {
+        return User_1.User.clear();
     }
     async register(options, {}) {
         if (options.username.length <= 2) {
@@ -114,6 +129,8 @@ let UserResolver = class UserResolver {
                     username: options.username,
                     password: hashedpassword,
                     email: options.email,
+                    chats: [],
+                    contacts: [],
                 },
             ])
                 .execute();
@@ -126,7 +143,7 @@ let UserResolver = class UserResolver {
                 };
             }
         }
-        const token = (0, uuid_1.v4)();
+        const token = user.id;
         return { user, token };
     }
     async login(options, {}) {
@@ -138,7 +155,7 @@ let UserResolver = class UserResolver {
         }
         const verify = await argon2_1.default.verify(user.password, options.password);
         if (verify) {
-            const token = (0, uuid_1.v4)();
+            const token = user.id;
             return { user, token };
         }
         else {
@@ -148,6 +165,30 @@ let UserResolver = class UserResolver {
                 ],
             };
         }
+    }
+    async beFriend(options) {
+        const user = await User_1.User.findOne({ id: options.id });
+        const withUser = await User_1.User.findOne({ id: options.with });
+        if (user && withUser) {
+            if (user.contacts === undefined) {
+                User_1.User.update({ id: options.id }, { contacts: [withUser] });
+            }
+            else {
+                user.contacts.push(withUser);
+            }
+            if (withUser.contacts === undefined) {
+                User_1.User.update({ id: options.with }, { contacts: [user] });
+            }
+            else {
+                withUser.contacts.push(user);
+            }
+            return true;
+        }
+        return false;
+    }
+    async getFriends(id) {
+        const user = await User_1.User.findOne(id);
+        return await (user === null || user === void 0 ? void 0 : user.contacts);
     }
 };
 __decorate([
@@ -164,6 +205,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "listusers", null);
 __decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "clear", null);
+__decorate([
     (0, type_graphql_1.Mutation)(() => UserResponse),
     __param(0, (0, type_graphql_1.Arg)("options")),
     __param(1, (0, type_graphql_1.Ctx)()),
@@ -179,6 +226,20 @@ __decorate([
     __metadata("design:paramtypes", [UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, type_graphql_1.Arg)("options")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [BeFriendInput]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "beFriend", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [User_1.User], { nullable: true }),
+    __param(0, (0, type_graphql_1.Arg)("options")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "getFriends", null);
 UserResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], UserResolver);

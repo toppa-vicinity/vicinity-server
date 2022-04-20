@@ -11,7 +11,6 @@ import {
 } from "type-graphql";
 import { MyContext } from "src/types";
 import argon2 from "argon2";
-import { v4 } from "uuid";
 import { getConnection } from "typeorm";
 
 @InputType()
@@ -24,6 +23,15 @@ class UsernamePasswordInput {
 
   @Field()
   password: string;
+}
+
+@InputType()
+class BeFriendInput {
+  @Field()
+  id: number;
+
+  @Field()
+  with: number;
 }
 
 @ObjectType()
@@ -44,7 +52,7 @@ class UserResponse {
   user?: User;
 
   @Field({ nullable: true })
-  token?: string;
+  token?: number;
 }
 
 @Resolver()
@@ -57,6 +65,11 @@ export class UserResolver {
   @Query(() => [User])
   listusers() {
     return User.find();
+  }
+
+  @Mutation(() => Boolean)
+  clear() {
+    return User.clear();
   }
 
   @Mutation(() => UserResponse)
@@ -102,6 +115,8 @@ export class UserResolver {
             username: options.username,
             password: hashedpassword,
             email: options.email,
+            chats: [],
+            contacts: [],
           },
         ])
         .execute();
@@ -114,7 +129,7 @@ export class UserResolver {
         };
       }
     }
-    const token = v4();
+    const token = user.id;
     return { user, token };
   }
 
@@ -131,7 +146,7 @@ export class UserResolver {
     }
     const verify = await argon2.verify(user.password, options.password);
     if (verify) {
-      const token = v4();
+      const token = user.id;
       return { user, token };
     } else {
       return {
@@ -149,4 +164,34 @@ export class UserResolver {
   //     resolve(true);
   //   });
   // }
+  @Mutation(() => Boolean)
+  async beFriend(@Arg("options") options: BeFriendInput) {
+    const user = await User.findOne({ id: options.id });
+    const withUser = await User.findOne({ id: options.with });
+    if (user && withUser) {
+      if (user.contacts === undefined) {
+        // user.contacts = [withUser];
+        User.update({ id: options.id }, { contacts: [withUser] });
+      } else {
+        user.contacts.push(withUser);
+      }
+      if (withUser.contacts === undefined) {
+        // withUser.contacts = [user];
+        User.update({ id: options.with }, { contacts: [user] });
+      } else {
+        withUser.contacts.push(user);
+      }
+      // await user.save();
+      // await withUser.save();
+      // console.log(user.contacts.length, withUser.contacts.length);
+      return true;
+    }
+    return false;
+  }
+
+  @Query(() => [User], { nullable: true })
+  async getFriends(@Arg("options") id: number) {
+    const user = await User.findOne(id);
+    return await user?.contacts;
+  }
 }

@@ -8,12 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var User_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const Entity_1 = require("typeorm/decorator/entity/Entity");
-let User = class User extends typeorm_1.BaseEntity {
+const ChatRoom_1 = require("./ChatRoom");
+let User = User_1 = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
@@ -35,6 +37,18 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => [User_1], { nullable: true }),
+    (0, typeorm_1.ManyToMany)(() => User_1),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], User.prototype, "contacts", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [ChatRoom_1.ChatRoom]),
+    (0, typeorm_1.ManyToMany)(() => ChatRoom_1.ChatRoom),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], User.prototype, "chats", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
@@ -44,7 +58,7 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], User.prototype, "updatedAt", void 0);
-User = __decorate([
+User = User_1 = __decorate([
     (0, type_graphql_1.ObjectType)(),
     (0, Entity_1.Entity)()
 ], User);

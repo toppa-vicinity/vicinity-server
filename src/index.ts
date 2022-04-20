@@ -7,6 +7,8 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver, UserResolver } from "./resolvers";
 import { createConnection } from "typeorm";
 import { User } from "./entities/User";
+import { ChatRoom } from "./entities/ChatRoom";
+import { Message } from "./entities/Message";
 
 const main = async () => {
   const conn = await createConnection({
@@ -15,7 +17,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     extra: { rejectUnauthorized: false },
-    entities: [User], // add entities
+    entities: [User, ChatRoom, Message], // add entities
   });
   console.log("connected at", conn.name);
 

@@ -3,10 +3,13 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Entity } from "typeorm/decorator/entity/Entity";
+import { ChatRoom } from "./ChatRoom";
 
 @ObjectType()
 @Entity()
@@ -25,6 +28,16 @@ export class User extends BaseEntity {
   @Field()
   @Column({ unique: true })
   email!: string;
+
+  @Field(() => [User], { nullable: true })
+  @ManyToMany(() => User)
+  @JoinTable()
+  contacts: User[];
+
+  @Field(() => [ChatRoom])
+  @ManyToMany(() => ChatRoom)
+  @JoinTable()
+  chats!: ChatRoom[];
 
   @Field(() => String)
   @CreateDateColumn()
